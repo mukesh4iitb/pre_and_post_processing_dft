@@ -3,7 +3,6 @@
 #https://github.com/K4ys4r/VASP_Scripts
 #*************************************************************************************#
 
-
 #!/usr/bin/python
 #-*- coding:utf-8 -*-
 
@@ -74,9 +73,11 @@ PLOT=True
 while PLOT:
       #Xplot=input("Xplot (Steps, T, E, F, E0, EK, SP or SK ) > ")
       Xplot="Steps"
-      Yplot=input("Yplot (T, E, F, E0, EK, SP or SK ) > ")
+      Yplot=input("Yplot (T, E, F, E0, EK, SP, SK or md_data) > ")
       if (Xplot in OSZ_Labels) and (Yplot in OSZ_Labels):
          PLOT_DATA(OSZ,Xplot,Yplot)
+      elif Yplot:
+          p.savetxt('md_data',OSZ,fmt='%10.16f')
       else:
          print("\n    Error in Xplot or Yplot Label!!..\n")
          PLOT=False
