@@ -1,111 +1,44 @@
-import numpy as np
-f=open("POSCAR",'r')
-position_list=[]
-for i,line in enumerate(f):
-	if i==2:
-		a_vec=np.array(list(map(float,line.split())))
-	if i==3:
-		b_vec=np.array(list(map(float,line.split())))
-	if i==4:
-		c_vec=np.array(list(map(float,line.split())))
-	if i>=8:
-		position_list.append(list(map(float,line.split())))
-print("Cell vector a:",a_vec)
-print("Cell vector b:",b_vec)
-print("Cell vector c:",c_vec)
-print("Position to be converted to direct to cartesian or vice versa:")
-print("--------------------------------------------------------------")
-print(np.array(position_list))
-position_mat=np.array(position_list)
+POS=open("TiO2.vasp",'r')
+POS_out=open("TiO2_out.vasp",'w')
 
-def Cartesian():
-	#a_vec=np.array([13.8193855285999998,000000000000000000,000000000000000000])
-	#b_vec=np.array([6.9083316673999997,11.9684152387000005,0.0000000000000000])
-	#c_vec=np.array([0.0000000000000000,0.0000000000000000,30.0039262771999979])
-	a=np.linalg.norm(a_vec)
-	b=np.linalg.norm(b_vec)
-	c=np.linalg.norm(c_vec)
-	alpha=np.arccos(np.dot(b_vec,c_vec)/(a*b))
-	beta=np.arccos(np.dot(a_vec,c_vec)/(a*c))
-	gamma=np.arccos(np.dot(a_vec,b_vec)/(a*b))
+#Reading POS file
+list_vec=[]
+for line in POS:
+    line1=line.split()
+    list_vec.append(line1)
+    #print(line1)
+    #print("     ".join(line1))
+POS.close()
 
-	print(alpha*180/np.pi)
-	print('----------------')
-	print(beta*180/np.pi)
-	print('---------------')
-	print(gamma*180/np.pi)
-	#------------------------------------------------------------------------------
-	omega=a*b*c*np.sqrt(1-np.cos(alpha)**2-np.cos(beta)**2-np.cos(gamma)**2+2*np.cos(alpha)*np.cos(beta)*np.cos(gamma))
+#Start writing POS_out file
+POS_out.write('  '.join(list_vec[0])+'\n')
+POS_out.write('  '.join(list_vec[1])+'\n')
 
-	A=np.array([   [a,        b*np.cos(gamma),                    c*np.cos(beta)],
-               [0,        b*np.sin(gamma),                    c*((np.cos(alpha)-np.cos(beta)*np.cos(gamma))/np.sin(gamma))],
-               [0,        0,                                  omega/(a*b*np.sin(gamma))]
+change_axis=input("Enter the axis you want to enterchange ie ab,bc,ca \n")
+if change_axis=='ab':
+    A,B=1,2
+elif change_axis=='bc':
+    A,B=2,3
+elif change_axis=='ca':
+    A,B=3,1
 
-           ])
+list_vec[A+1],list_vec[B+1]=list_vec[B+1],list_vec[A+1]
+#list_vec[2],list_vec[3]=list_vec[3],list_vec[2]
 
-	dir_vec=np.array([0.18633382,0.08302035,0.50155436])
-	#car_vec=np.dot(A,dir_vec)
-	car_vec=np.dot(A,position_mat.T)
-	np.savetxt('cart',car_vec.T,fmt='%10.16f')
-	fcart=open('cart','r')
-	f1=open("POSCAR",'r')
-	fc=open("POSCAR_c",'w')
-	for i,line in enumerate(f1):
-		if i<=6:
-			fc.write(line)
-		if i==7:
-			fc.write("Cartesian \n")
-	fc.write(fcart.read())
-	return "You have successfully converted from direct to cartesian coordinate system!! \nFile name: POSCAR_c"
+list_vec[2][A-1],list_vec[2][B-1]=list_vec[2][B-1],list_vec[2][A-1]
+list_vec[3][A-1],list_vec[3][B-1]=list_vec[3][B-1],list_vec[3][A-1]
+list_vec[4][A-1],list_vec[4][B-1]=list_vec[4][B-1],list_vec[4][A-1]
 
+POS_out.write('        '+'       '.join(list_vec[2])+'\n')
+POS_out.write('        '+'       '.join(list_vec[3])+'\n')
+POS_out.write('        '+'       '.join(list_vec[4])+'\n')
 
+POS_out.write('    '+'  '.join(list_vec[5])+'\n')
+POS_out.write('    '+'    '.join(list_vec[6])+'\n')
+POS_out.write(' '.join(list_vec[7])+'\n')
 
-def Direct():
-	#a_vec=np.array([13.8193855285999998,000000000000000000,000000000000000000])
-	#b_vec=np.array([6.9083316673999997,11.9684152387000005,0.0000000000000000])
-	#c_vec=np.array([0.0000000000000000,0.0000000000000000,30.0039262771999979])
-	a=np.linalg.norm(a_vec)
-	b=np.linalg.norm(b_vec)
-	c=np.linalg.norm(c_vec)
-	alpha=np.arccos(np.dot(b_vec,c_vec)/(a*b))
-	beta=np.arccos(np.dot(a_vec,c_vec)/(a*c))
-	gamma=np.arccos(np.dot(a_vec,b_vec)/(a*b))
+for elem in list_vec[8:]:
+    elem[A-1],elem[B-1]=elem[B-1],elem[A-1]
+    POS_out.write("       ".join(elem)+'\n')
 
-	print(alpha*180/np.pi)
-	print('----------------')
-	print(beta*180/np.pi)
-	print('---------------')
-	print(gamma*180/np.pi)
-	#------------------------------------------------------------------------------
-	omega=a*b*c*np.sqrt(1-np.cos(alpha)**2-np.cos(beta)**2-np.cos(gamma)**2+2*np.cos(alpha)*np.cos(beta)*np.cos(gamma))
-
-	A_inv=np.array([   [1/a,     -np.cos(gamma)/(a*np.sin(gamma)),     b*c*(np.cos(alpha)*np.cos(gamma)-np.cos(beta))/(omega*np.sin(gamma))],
-                   [0,        1/(b*np.sin(gamma)),                 a*c*(np.cos(beta)*np.cos(gamma)-np.cos(alpha))/(omega*np.sin(gamma))],
-                   [0,        0,                                   a*b*np.sin(gamma)/omega]
-    
-    
-    
-           ])
-
-	car_vec1=np.array([15.23040504,  8.5815823 , 10.32146595])
-	car_vec=np.dot(A_inv,position_mat.T)
-	np.savetxt('direct',car_vec.T,fmt='%10.16f')
-	fdirect=open('direct','r')
-	f1=open("POSCAR",'r')
-	fd=open("POSCAR_d",'w')
-	for i,line in enumerate(f1):
-		if i<=6:
-			fd.write(line)
-		if i==7:
-			fd.write("Direct \n")
-	fd.write(fdirect.read())
-	return "You have successfully converted from cartesian to direct coordinate system!! \nFile name: POSCAR_d"
-
-
-
-                                   
-conversion=input("Enter to which you want to change ie Direct or Cartesian\n")
-if conversion=='Cartesian':
-	print(Cartesian())
-if conversion=='Direct':
-	print(Direct())
+POS_out.close()
