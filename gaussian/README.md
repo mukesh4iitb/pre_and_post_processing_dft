@@ -1,4 +1,4 @@
-# useful for pre and post for g16:
+# Useful for pre and post for g16:
 
 It generat the input files from xyz file to any kinds of file. It specially useful if you can to run multiple calculations. Other application of it as follows:
 
