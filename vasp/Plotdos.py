@@ -8,10 +8,13 @@ Author: It was originally written by Dr. Uthpala Herath. I have modified it to w
 Original code can be found at:
 https://github.com/uthpalaherath/MatSciScripts
 
+
 Usage:
     $ plotDOS.py -h
 
     This will bring a list of options.
+    A tutorial can be found here:
+    https://uthpalaherath.com/Plotting-Density-of-States/
 
 """
 
@@ -312,7 +315,7 @@ def plot_dos_d(args, sigma_val=0.05):
 
         keys = list(matchlistdic.keys())
         values = list(matchlistdic.values())
-        # values = [int(i) for i in values]
+        values = [int(i) for i in values]
 
         atomindex = keys.index(args.atom)
         minindex = sum(values[:atomindex])
