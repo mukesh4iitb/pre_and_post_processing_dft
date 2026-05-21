@@ -98,6 +98,9 @@ def combine_INCAR(file1, file2, output="INCAR_combined"):
 
     combined = {}
     conflicts = {}
+    only_in_d1 = {}
+    only_in_d2 = {}
+
 
     # Process all keys
     all_keys = set(d1.keys()).union(d2.keys())
@@ -108,9 +111,11 @@ def combine_INCAR(file1, file2, output="INCAR_combined"):
 
         if v1_raw is None:
             combined[key] = v2_raw
+            only_in_d2[key] = v2_raw
             continue
         if v2_raw is None:
             combined[key] = v1_raw
+            only_in_d1[key] = v1_raw
             continue
 
         # normalize before comparison
@@ -121,6 +126,16 @@ def combine_INCAR(file1, file2, output="INCAR_combined"):
             combined[key] = v1  # same physical value → keep one
         else:
             conflicts[key] = (v1, v2)
+    if only_in_d1:
+        print(f"\nOnly in {file1}")
+        for k, v in sorted(only_in_d1.items()):
+            print(f"{k} = {v}")
+        print()
+    if only_in_d2:
+        print(f"\nOnly in {file2}")
+        for k, v in sorted(only_in_d2.items()):
+            print(f"{k} = {v}")
+        print()
 
     # Write output
     with open(output, "w") as f:
@@ -136,4 +151,4 @@ def combine_INCAR(file1, file2, output="INCAR_combined"):
     print(f"writing {output} file!")
     return combined, conflicts
 
-combine_INCAR("INCAR_dos_bader", "INCAR.lobsterpy-3")
+combine_INCAR("INCAR1", "INCAR2")
