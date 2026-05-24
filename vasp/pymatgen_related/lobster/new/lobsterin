@@ -1,0 +1,10 @@
+basisSet pbeVaspFit2015
+COHPstartEnergy -16.31
+COHPendEnergy 28.45
+cohpGenerator from 0.1 to 6.0 orbitalwise
+saveProjectionToFile
+basisfunctions Ga 4p 4s
+basisfunctions As 4p 4s
+
+saveProjectionToFile
+writeFatbandFiles

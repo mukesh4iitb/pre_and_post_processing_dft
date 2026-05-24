@@ -1,0 +1,11 @@
+EDIFF = 1.0
+ISIF = 0
+ISMEAR = -5
+ISYM = 0
+LORBIT = 11
+LREAL = False
+LWAVE = True
+NBANDS = 8
+NEDOS = 801
+NSW = 0
+PREC = Accurate
