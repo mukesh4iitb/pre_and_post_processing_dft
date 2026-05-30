@@ -68,14 +68,14 @@ lvenergy_convergence_by_jobid(){
 }
 
 neb_plot(){
-python3  ~/codes/mycodes/neb_plot.py "$@"
+python3  ../Plots/neb_plot.py "$@"
 }
 
 neb_barrier_plot_pq(){
-python3  ~/codes/mycodes/neb_barrier_plot_pq.py "$@"
+python3  ../Plots/neb_barrier_plot_pq.py "$@"
 }
 neb_spline_plot_pq(){
-python3  ~/codes/mycodes/neb_spline_plot_pq.py "$@"
+python3  ../Plots/neb_spline_plot_pq.py "$@"
 }
 
 
