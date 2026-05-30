@@ -1,6 +1,6 @@
 #!/bin/bash
 # source: https://tex.stackexchange.com/questions/639807/latexdiff-and-achemso-not-showing-changes-to-the-title
-# since latexdiff does not work with midrule, I need to delete that from the both old.tex and new.tex using sed -i '/midurle/' old.tex and so on.
+# since latexdiff does not work with toprule, midrule, and bottomrule, So I need to delete that from the both old.tex and new.tex using sed -i '/midurle/' old.tex and so on.
 # Here is my conversation with gemini: https://gemini.google.com/share/b0120090a1ff
 
 sed -i '/midrule/d' old.tex
