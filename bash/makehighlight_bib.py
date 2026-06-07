@@ -1,5 +1,6 @@
 import re
 import bibtexparser
+import bibtexparser.middlewares as m
 
 def highlight_reference(db, citation_key, color="blue"):
 
@@ -25,6 +26,70 @@ def highlight_reference(db, citation_key, color="blue"):
     return False
 
 
+def highlight_author_in_bib(
+    input_file,
+    output_file,
+    first_name="Mukesh",
+    last_name="Singh",
+    style="bold",   # options: "bold", "color"
+    color="blue"
+):
+    """
+    Highlights a specific author name in a BibTeX file.
+
+    Parameters:
+        input_file (str): Path to input .bib file
+        output_file (str): Path to output .bib file
+        first_name (str): First name to match
+        last_name (str): Last name to match
+        style (str): "bold" or "color"
+        color (str): color name if style="color"
+    """
+
+    # Read input
+    with open(input_file) as f:
+        bibtex_str = f.read()
+
+    # Parse
+    library = bibtexparser.parse_string(
+        bibtex_str,
+        append_middleware=[
+            m.SeparateCoAuthors(True),
+            m.SplitNameParts(True),
+        ],
+    )
+
+    # Highlight
+    for entry in library.entries:
+        for field in entry.fields:
+            if field.key == "author":
+                for author in field.value:
+                    first = " ".join(author.first)
+                    last = " ".join(author.last)
+
+                    if first == first_name and last == last_name:
+                        if style == "bold":
+                            author.first = [rf"\textbf{{{first_name}}}"]
+                            author.last = [rf"\textbf{{{last_name}}}"]
+
+                        elif style == "color":
+                            author.first = [rf"\textcolor{{{color}}}{{{first_name}}}"]
+                            author.last = [rf"\textcolor{{{color}}}{{{last_name}}}"]
+
+    # Write output
+    output = bibtexparser.write_string(
+        library,
+        prepend_middleware=[
+            m.MergeNameParts("first"),
+            m.MergeCoAuthors(True),
+        ],
+    )
+
+    with open(output_file, "w") as f:
+        f.write(output)
+
+
+# highlight_author_in_bib("input.bib", "output.bib", style='bold')
 
 
 
