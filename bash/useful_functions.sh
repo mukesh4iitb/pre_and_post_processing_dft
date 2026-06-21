@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# these functions are copied from ~/.bash_functions
+
 # Extension of ls command:
 ls_list(){
 echo "[" $(ls -d "$@" | awk '{print "`" $1 "`"}' | sed 's/`/"/g' | paste -sd ",") "]"
