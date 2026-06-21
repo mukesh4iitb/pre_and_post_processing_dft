@@ -42,7 +42,21 @@ find_list() {
     eval "$py_var=\"$py_list\""
 }
 
-
+array2list() {
+    local first=1
+    printf '['
+    for item in "$@"; do
+        if (( first )); then
+            first=0
+        else
+            printf ', '
+        fi
+        printf '"%s"' "$item"
+    done
+    printf ']\n'
+}
+# Example:  array2list Fe1 Fe2 Fe3 Fe4 
+# output:  ["Fe1", "Fe2", "Fe3", "Fe4"]
 
 ## cd to scratch directory
 
