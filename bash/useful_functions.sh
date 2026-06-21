@@ -89,6 +89,11 @@ sucd() {
     fi
 }
 
+fft() {
+    find . -name "FAIL*"
+    find . -name "TERM*"
+}
+
 
 # copying job scripts
 cjob() {
