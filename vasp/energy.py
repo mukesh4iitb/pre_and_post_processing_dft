@@ -1,6 +1,7 @@
 import re
 import os
 import ast
+import pandas as pd
 from pymatgen.io.vasp.outputs import Poscar, Oszicar, Outcar
 
 def E0_oszicar_old(oszicar_dir):
@@ -78,4 +79,55 @@ def parse_data_file(filename):
 
     return rows
 
+#data=parse_data_file("data.txt")
+
+
+## It can process the follwoing kinds of data.txt
+# sys: Fe2(1)
+# with 5x5x1:
+# Eb: -2.57054070000008 mag: ('Fe', -2.662)
+# sys: Fe2(2)
+# with 5x5x1:
+# Eb: -1.5757607000000884 mag: ('Fe', 2.815)
+# with 2x3x1
+# Eb: -1.5686907000000896 mag: ('Fe', 2.812)
+# sys: Fe3(1)
+# with 5x5x1 not optimized fully
+# Eb: -7.338240700000071 mag: ('Fe', 3.307)
+# with 2x3x1
+# Eb: -7.6287306999999345 mag: ('Fe', 3.306)
+# sys: Fe3(2)
+# with 5x5x1 not optimized fully
+# Eb: -5.4272306999999245 mag: ('Fe', 3.216)
+
+
+
+def dicts_to_dataframe(data):
+    rows = []
+
+    for item in data:
+        row = {"sys": item["sys"]}
+
+        values = item.get("values", {})
+
+        for k, v in values.items():
+
+            # handle Eb1, Eb2 ...
+            if k.startswith("Eb"):
+                row[k] = v
+
+            # handle tuples or list
+            elif k.startswith("mag") and isinstance(v, (tuple, list)):
+                # row[f"{k}_atom"] = v[0]
+                row[f"{k}_value"] = v[1]
+
+            else:
+                continue
+
+        rows.append(row)
+
+    return pd.DataFrame(rows)
+
+# df = dicts_to_dataframe(data)
+# print(df)
 
