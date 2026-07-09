@@ -6,7 +6,7 @@
 #!/usr/bin/python
 #-*- coding:utf-8 -*-
 
-import pylab as p
+from matplotlib import pylab as p
 
 
 try:
