@@ -80,7 +80,8 @@ python3  ../Plots/neb_spline_plot_pq.py "$@"
 
 
 # cleaning the bib file and generating one with only citation in tex file.
-getcleanbib() {
+getcleanbib1() {
+    echo "using biblatexparser verion: 1"
     if [[ -z "$1" ]]; then
         echo "Usage: bibclean <tex-filename-without-extension>"
         return 1
@@ -125,8 +126,60 @@ EOF
     rm -f "$tmpbib"
     echo "✔ Clean bibliography written to $outbib"
 }
-#gencleanbib main
+#gencleanbib1 main
 
+# cleaning the bib file and generating one with only citation in tex file.
+getcleanbib2() {
+    echo "using biblatexparser verion: 2"
+    if [[ -z "$1" ]]; then
+        echo "Usage: bibclean <tex-filename-without-extension>"
+        return 1
+    fi
+
+    local base="$1"
+    local tmpbib="${base}_cited_tmp.bib"
+    local outbib="${base}_references.bib"
+
+    # Step 1: extract cited references
+    if [[ -f "${base}.bcf" ]]; then
+        echo "Detected biber workflow (.bcf)"
+        biber --output_format=bibtex \
+              --output_resolve \
+              --output-file "$tmpbib" \
+              "$base"
+
+    elif [[ -f "${base}.aux" ]]; then
+        echo "Detected BibTeX workflow (.aux)"
+        bibexport -o "$tmpbib" "${base}.aux"
+
+    else
+        echo "Error: No .aux or .bcf file found"
+        return 1
+    fi
+
+    # Step 2: clean unwanted fields using Python
+    python3 <<EOF
+import bibtexparser
+
+library = bibtexparser.parse_file("$tmpbib")
+
+if library.failed_blocks:
+    print(f"Warning: {len(library.failed_blocks)} block(s) could not be parsed")
+
+for entry in list(library.entries):
+    if entry.key == "achemso-control":   # junk entry left by bibexport
+        library.remove(entry)
+        continue
+    entry.pop("abstract", None)
+
+bibtexparser.write_file("$outbib", library)
+
+EOF
+
+    rm -f "$tmpbib"
+    echo "✔ Clean bibliography written to $outbib"
+}
+#gencleanbib2 main
 
 vasp2cif () {
   if [ "$#" -eq 0 ]; then
